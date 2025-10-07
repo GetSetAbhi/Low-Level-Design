@@ -10,7 +10,7 @@ How would you implement and manage this system in a multithreaded environment?
 
 Each rate limiter instance (for a single user) maintains mutable shared state:
 
-* TokenCreditRateLimiter.java*
+`TokenCreditRateLimiter.java`
 ```
 
 private double refreshTokensPerSecond;
