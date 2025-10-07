@@ -52,6 +52,7 @@ class TokenBucketRateLimiter implements RateLimiter {
 	public synchronized boolean check() {
 		refill();
 		if (this.currentTokenCount > 0) {
+			this.currentTokenCount -= 1;
 			return true;
 		}
 		return false;
