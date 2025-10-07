@@ -17,9 +17,7 @@ private int currentTokenCount;
 private int currentCredits;
 ```
 
-We introduced this, to make sure only one thread modifies the internal state at a time,
-
-and changes are visible to other threads once the method exits.
+We introduced this, to make sure only one thread modifies the internal state at a time, and changes are visible to other threads once the method exits.
 
 ```
 private final Object lock = new Object();
