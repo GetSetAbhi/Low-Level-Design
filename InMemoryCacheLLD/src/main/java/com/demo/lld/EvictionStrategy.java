@@ -3,9 +3,6 @@ package com.demo.lld;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingDeque;
 
 public interface EvictionStrategy<K> {
 	public void accessedKey(K key);
@@ -19,7 +16,6 @@ class LRUEvictionStrategy<K> implements EvictionStrategy<K> {
 
 	@Override
 	public void accessedKey(K key) {
-		
 		if (hashSet.contains(key)) {
 			hashSet.remove(key);
 		}
@@ -29,7 +25,7 @@ class LRUEvictionStrategy<K> implements EvictionStrategy<K> {
 	@Override
 	public K evictKey() {
 		if (hashSet.size() > 0) {
-			K key = hashSet.getFirst();
+			K key = hashSet.iterator().next();
 			hashSet.remove(key);
 			return key;
 		}
