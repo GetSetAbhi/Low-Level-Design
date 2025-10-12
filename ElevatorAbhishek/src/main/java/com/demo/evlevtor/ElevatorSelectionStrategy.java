@@ -12,35 +12,35 @@ class NearestElevatorStrategy implements ElevatorSelectionStrategy {
 	@Override
 	public Optional<Elevator> getElevator(Request request, List<Elevator> elevators) {
 		
-		int min_score = Integer.MAX_VALUE;
+		int min_time = Integer.MAX_VALUE;
 		Elevator elevator = null;
 		
 		for (Elevator e : elevators) {
-			if (isSuitable(e, request)) {
-				int diff = Math.abs(request.targetFloor - e.currentFloor);
-				if (diff < min_score) {
-					min_score = diff;
-					elevator = e;
-				}
+			int score = getScore(e, request);
+			if (score < min_time) {
+				min_time = score;
+				elevator = e;
 			}
 		}
 		
 		return Optional.ofNullable(elevator);
 	}
 
-	private boolean isSuitable(Elevator e, Request request) {
-		if (e.getDirection() == Direction.IDLE) {
-			return true;
+	private int getScore(Elevator e, Request request) {
+		
+		if (e.getDirection() == Direction.UP && e.currentFloor > request.targetFloor) {
+			int lastFloor = e.upRequest.last().targetFloor;
+			return (lastFloor - e.currentFloor) + lastFloor - request.targetFloor;
 		}
 		
-		if (e.getDirection() == Direction.UP && request.targetFloor >= e.currentFloor) {
-			return true;
+		if (e.getDirection() == Direction.DOWN && e.currentFloor < request.targetFloor) {
+			int lastFloor = e.downRequest.last().targetFloor;
+			return (e.currentFloor - lastFloor) + (request.targetFloor - lastFloor);
 		}
 		
-		if (e.getDirection() == Direction.DOWN && request.targetFloor <= e.currentFloor) {
-			return true;
-		}
-		return false;
+
+		
+		return Math.abs(e.currentFloor - request.targetFloor);
 	}
 	
 }
