@@ -16,7 +16,7 @@ class NearestElevatorStrategy implements ElevatorSelectionStrategy {
 		Elevator elevator = null;
 		
 		for (Elevator e : elevators) {
-			int score = getScore(e, request);
+			int score = getEstimatedWaitingTime(e, request);
 			if (score < min_time) {
 				min_time = score;
 				elevator = e;
@@ -26,7 +26,7 @@ class NearestElevatorStrategy implements ElevatorSelectionStrategy {
 		return Optional.ofNullable(elevator);
 	}
 
-	private int getScore(Elevator e, Request request) {
+	private int getEstimatedWaitingTime(Elevator e, Request request) {
 		
 		if (e.getDirection() == Direction.UP && e.currentFloor > request.targetFloor) {
 			int lastFloor = e.upRequest.last().targetFloor;
