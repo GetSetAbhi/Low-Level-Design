@@ -3,35 +3,29 @@ package com.test.logger.lld.logger;
 import com.test.logger.lld.logger.display.DisplayMode;
 
 public abstract class Logger {
-	
-	private Logger logger;
-	private LogType logType;
-	
+
+	private Logger next;
+
 	public Logger() {
-		
-	}
-	
-	public Logger(LogType logType, Logger logger) {
-		this.setLogger(logger);
-		this.setLogType(logType);
-	}
-	
-	public abstract void display(LogType type, String message, DisplayMode mode);
 
-	public LogType getLogType() {
-		return logType;
 	}
 
-	public void setLogType(LogType logType) {
-		this.logType = logType;
+	public void display(LogType type, String message, DisplayMode mode) {
+		if (this.getLogType() == type) {
+			mode.log(message);
+		} else if (this.next != null) {
+			this.next.display(type, message, mode);
+		}
 	}
+
+	public abstract LogType getLogType();
 
 	public Logger getLogger() {
-		return logger;
+		return next;
 	}
 
-	public void setLogger(Logger logger) {
-		this.logger = logger;
+	public void setNext(Logger next) {
+		this.next = next;
 	}
 
 }
