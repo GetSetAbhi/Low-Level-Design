@@ -1,6 +1,8 @@
 package com.demo.alerting.rules;
 
 import com.demo.alerting.Machine;
+import com.demo.alerting.sensor.Sensor;
+import com.demo.alerting.sensor.SensorType;
 
 public class PressureSensorRule extends SensorRule {
 
@@ -15,8 +17,12 @@ public class PressureSensorRule extends SensorRule {
 
 	@Override
 	public boolean canTrigger(Machine machine) {
-		if (machine.currentPressure < this.getLowerBound() || machine.currentPressure > this.getUpperBound()) {
-			return true;
+		Sensor sensor = machine.getSensor(SensorType.PRESSURE);
+		if (sensor != null) {
+			long value = sensor.getValue();
+			if (value < this.lowerBound || value > this.upperBound) {
+				return true;
+			}
 		}
 		return false;
 	}

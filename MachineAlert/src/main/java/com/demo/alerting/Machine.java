@@ -1,15 +1,28 @@
 package com.demo.alerting;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import com.demo.alerting.sensor.Sensor;
+import com.demo.alerting.sensor.SensorType;
+
 public class Machine {
 
 	public String name;
-	public int currentTemprature;
-	public int currentPressure;
+	Map<SensorType, Sensor> sensorMap;
 	
-	public Machine(String name, int temparature, int pressure) {
+	public Machine(String name) {
 		this.name = name;
-		this.currentTemprature = temparature;
-		this.currentPressure = pressure;
+		this.sensorMap = new ConcurrentHashMap<>();
+	}
+	
+	public void addSensor(SensorType type, long value) {
+		Sensor sensor = this.sensorMap.computeIfAbsent(type, k -> new Sensor(type, value));
+		sensor.setValue(value);
+	}
+	
+	public Sensor getSensor(SensorType type) {
+		return this.sensorMap.getOrDefault(type, null);
 	}
 
 	public String getName() {
@@ -18,23 +31,5 @@ public class Machine {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public int getCurrentTemprature() {
-		return currentTemprature;
-	}
-
-	public void setCurrentTemprature(int currentTemprature) {
-		this.currentTemprature = currentTemprature;
-	}
-
-	public int getCurrentPressure() {
-		return currentPressure;
-	}
-
-	public void setCurrentPressure(int currentPressure) {
-		this.currentPressure = currentPressure;
-	}
-	
-	
+	}	
 }
