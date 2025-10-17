@@ -4,23 +4,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class TrieNode {
-	private Map<Character, TrieNode> children;
-	private boolean isWordEnd;
+
+	public char value;
+	public Map<Character, TrieNode> children;
+	public boolean isWord;
 	
-	public TrieNode() {
+	public TrieNode(char value) {
+		super();
+		this.value = value;
 		this.children = new HashMap<>();
-		this.isWordEnd = false;
+		this.isWord = false;
 	}
-	
-	public boolean isWordEnd() {
-		return isWordEnd;
+
+	@Override
+	public String toString() {
+		return "TrieNode [value=" + value + "]";
 	}
-	public void setWordEnd(boolean isWordEnd) {
-		this.isWordEnd = isWordEnd;
-	}
-	public Map<Character, TrieNode> getChildren() {
-		return children;
-	}
-	
-	
 }
