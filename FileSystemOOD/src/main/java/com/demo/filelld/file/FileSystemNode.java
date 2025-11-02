@@ -10,6 +10,7 @@ public abstract class FileSystemNode {
 	private Map<String, FileSystemNode> children;
 	private LocalDateTime createdAt;
 	private LocalDateTime modifiedAt;
+	public FileSystemNode parent;
 	
 	public FileSystemNode(String name) {
 		this.name = name;
@@ -36,5 +37,9 @@ public abstract class FileSystemNode {
 
 	public LocalDateTime getModifiedAt() {
 		return modifiedAt;
+	}
+
+	public void setParent(FileSystemNode parent) {
+		this.parent = parent;
 	}
 }
