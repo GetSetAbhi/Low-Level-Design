@@ -2,6 +2,7 @@ package com.demo.filelld;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import com.demo.filelld.file.Directory;
@@ -77,11 +78,10 @@ public class FileSystem {
 	
 	public String pwd(FileSystemNode node) {
 		StringBuilder sb = new StringBuilder();
-		while (node != null && node != root) {
+		while (node != null && node != this.root) {
 			sb.insert(0, "/" + node.getName());
 			node = node.parent;
 		}
-		System.out.println("PWD : " + sb.toString());
 		return sb.toString();
 	}
 	
@@ -127,48 +127,86 @@ public class FileSystem {
 		int lastSeparatorIndex = path.lastIndexOf("/");
 		return getNode(path.substring(0, lastSeparatorIndex));
 	}
-
+	
 	public void cd(String pathPattern) {
-		FileSystemNode startNode = pathPattern.startsWith("/") ? root : this.currentDirectory;
+		String[] dirs = pathPattern.substring(1).split("/");
+		List<FileSystemNode> results = matchesPathPattern(this.root, 0, dirs);
 		
-		String[] arr = pathPattern.substring(pathPattern.startsWith("/") ? 1 : 0).split("/");
-		
-		List<FileSystemNode> matches = matchPathPattern(startNode, arr, 0);
-
-        if (matches.isEmpty()) {
-            System.out.println("No match found for: " + pathPattern);
-            return;
-        }
-
-        FileSystemNode target = matches.get(0);
-        if (target.isFile()) {
-            System.out.println("Path points to a file, not a directory: " + target.getName());
-            return;
-        }
-
-        this.currentDirectory = target;
-        System.out.println("Changed directory to: " + pwd(target));
-		
+		if (results.size() > 0) {
+			FileSystemNode node = results.get(0);
+			
+			if (node.isFile()) {
+				System.out.println("Path points to a file, not a directory: " + node.getName());
+				return;
+			}
+			
+			this.currentDirectory = node;
+			System.out.println("Changed to directory : " + this.pwd(this.currentDirectory));
+		}
 	}
 
-	private List<FileSystemNode> matchPathPattern(FileSystemNode node, String[] parts, int index) {
-        List<FileSystemNode> result = new ArrayList<>();
+	private List<FileSystemNode> matchesPathPattern(FileSystemNode node, int index, String[] dirs) {
+		List<FileSystemNode> results = new ArrayList<>();
+		
+		if (index >= dirs.length) {
+			results.add(node);
+			return results;
+		}
+		
+		String currentValue = dirs[index];
+		boolean isRegex = currentValue.equals("*");
+		Pattern regex = Pattern.compile(currentValue.replace("*", "[^/]+"));
+		
+		for (Map.Entry<String, FileSystemNode> childEntry : node.getChildren().entrySet()) {
+			FileSystemNode childNode = childEntry.getValue();
+			if (isRegex || regex.matcher(childNode.getName()).matches()) {
+				results.addAll(matchesPathPattern(childNode, index + 1, dirs));
+			}
+		}
+		return results;
+	}
 
-        if (index >= parts.length) {
-            result.add(node);
-            return result;
-        }
-
-        String pattern = parts[index];
-        boolean isWildcard = pattern.equals("*");
-        Pattern regex = Pattern.compile(pattern.replace("*", "[^/]+"));
-
-        for (FileSystemNode child : node.getChildren().values()) {
-            if (isWildcard || regex.matcher(child.getName()).matches()) {
-                result.addAll(matchPathPattern(child, parts, index + 1));
-            }
-        }
-
-        return result;
-    }
+//	public void cd(String pathPattern) {
+//		FileSystemNode startNode = pathPattern.startsWith("/") ? root : this.currentDirectory;
+//		
+//		String[] arr = pathPattern.substring(pathPattern.startsWith("/") ? 1 : 0).split("/");
+//		
+//		List<FileSystemNode> matches = matchPathPattern(startNode, arr, 0);
+//
+//        if (matches.isEmpty()) {
+//            System.out.println("No match found for: " + pathPattern);
+//            return;
+//        }
+//
+//        FileSystemNode target = matches.get(0);
+//        if (target.isFile()) {
+//            System.out.println("Path points to a file, not a directory: " + target.getName());
+//            return;
+//        }
+//
+//        this.currentDirectory = target;
+//        System.out.println("Changed directory to: " + pwd(target));
+//		
+//	}
+//
+//	private List<FileSystemNode> matchPathPattern(FileSystemNode node, String[] parts, int index) {
+//        List<FileSystemNode> result = new ArrayList<>();
+//
+//        if (index >= parts.length) {
+//            result.add(node);
+//            return result;
+//        }
+//
+//        String pattern = parts[index];
+//        boolean isWildcard = pattern.equals("*");
+//        Pattern regex = Pattern.compile(pattern.replace("*", "[^/]+"));
+//
+//        for (FileSystemNode child : node.getChildren().values()) {
+//            if (isWildcard || regex.matcher(child.getName()).matches()) {
+//                result.addAll(matchPathPattern(child, parts, index + 1));
+//            }
+//        }
+//
+//        return result;
+//    }
 }

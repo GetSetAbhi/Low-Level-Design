@@ -40,8 +40,6 @@ public class FileAndDirectoryMain {
 		
 		String regexAbsolutePath2 = "/document/cwa_lld";
 		fs.cd(regexAbsolutePath2);
-		String regexAbsolutePath3 = "hola_senor";
-		fs.cd(regexAbsolutePath3);
 		
 		String regexAbsolutePath4 = "/document/*/*/*.txt";
 		fs.cd(regexAbsolutePath4);
