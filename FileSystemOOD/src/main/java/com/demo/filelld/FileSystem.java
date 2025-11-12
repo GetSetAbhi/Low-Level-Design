@@ -132,6 +132,11 @@ public class FileSystem {
 		String[] dirs = pathPattern.substring(1).split("/");
 		List<FileSystemNode> results = matchesPathPattern(this.root, 0, dirs);
 		
+		if (results.isEmpty()) {
+			System.out.println("Invalid path or directory : " + pathPattern);
+			return;
+		}
+		
 		if (results.size() > 0) {
 			FileSystemNode node = results.get(0);
 			
@@ -153,16 +158,16 @@ public class FileSystem {
 			return results;
 		}
 		
-		String currentValue = dirs[index];
-		boolean isRegex = currentValue.equals("*");
-		Pattern regex = Pattern.compile(currentValue.replace("*", "[^/]+"));
+		String name = dirs[index];
+		boolean isRegex = name.equals("*");
+		Pattern regex = Pattern.compile(name.replace("*", "[^/]+"));
 		
-		for (Map.Entry<String, FileSystemNode> childEntry : node.getChildren().entrySet()) {
-			FileSystemNode childNode = childEntry.getValue();
-			if (isRegex || regex.matcher(childNode.getName()).matches()) {
-				results.addAll(matchesPathPattern(childNode, index + 1, dirs));
+		for (FileSystemNode child : node.getChildren().values()) {
+			if (isRegex || regex.matcher(child.getName()).matches()) {
+				results.addAll(matchesPathPattern(child, index + 1, dirs));
 			}
 		}
+		
 		return results;
 	}
 
