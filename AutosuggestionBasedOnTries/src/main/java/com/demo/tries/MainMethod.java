@@ -8,7 +8,7 @@ public class MainMethod {
 		trie.insertWord("cat");
 		trie.insertWord("bat");
 		trie.insertWord("apple");
-        trie.insertWord("app");
+        //trie.insertWord("app");
         trie.insertWord("application");
         trie.insertWord("apex");
         trie.insertWord("banana");

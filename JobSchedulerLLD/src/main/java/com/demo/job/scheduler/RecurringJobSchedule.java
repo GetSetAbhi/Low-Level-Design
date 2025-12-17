@@ -4,6 +4,7 @@ public class RecurringJobSchedule extends JobSchedule {
 	
 	private long runIntervalInMillis;
 	private long lastRunTimeInMillis;
+	private boolean isExecuted = false;
 	
 	public RecurringJobSchedule(long runIntervalInMillis) {
 		this.runIntervalInMillis = runIntervalInMillis;
@@ -13,10 +14,21 @@ public class RecurringJobSchedule extends JobSchedule {
 	@Override
 	public boolean shouldRun(long currentTimeInMillis) {
 		if (currentTimeInMillis - this.lastRunTimeInMillis >= this.runIntervalInMillis) {
-			this.lastRunTimeInMillis = currentTimeInMillis;
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public void markExecuted(long currentTimeInMillis) {
+		this.lastRunTimeInMillis = currentTimeInMillis;
+		this.isExecuted = false;
+	}
+
+	@Override
+	public boolean isCompleted() {
+		// TODO Auto-generated method stub
+		return this.isExecuted;
 	}
 
 }

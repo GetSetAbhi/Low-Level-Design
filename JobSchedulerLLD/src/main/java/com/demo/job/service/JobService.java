@@ -11,7 +11,6 @@ import com.demo.job.Job;
 import com.demo.job.dto.JobDetail;
 import com.demo.job.dto.JobStatus;
 import com.demo.job.scheduler.JobSchedule;
-import com.demo.job.scheduler.OneTimeSchedule;
 
 public class JobService {
 
@@ -35,20 +34,21 @@ public class JobService {
 				.filter(j -> j.getJobStatus().equals(JobStatus.SCHEDULED)).toList();
 		for (JobDetail jobDetail : upcomingJobs) {
 			if (jobDetail.getJobSchedule().shouldRun(currentTimeInMillis)) {
-				this.executorService.execute(() -> jobRunner(jobDetail));
+				this.executorService.execute(() -> jobRunner(jobDetail, currentTimeInMillis));
 			}
 		}
 	}
 
-	private void jobRunner(JobDetail detail) {
+	private void jobRunner(JobDetail detail, long currentTimeInMillis) {
 		detail.setJobStatus(JobStatus.RUNNING);
 		try {
 			System.out.println("Running Job : " + detail.getJobId());
 			detail.getJob().execute();
+			detail.getJobSchedule().markExecuted(currentTimeInMillis);
 		} catch (Exception e) {
 			System.err.println("Error running job: " + detail.getJobId());
 		} finally {
-			if (detail.getJobSchedule() instanceof OneTimeSchedule) {
+			if (detail.getJobSchedule().isCompleted()) {
 				detail.setJobStatus(JobStatus.FINISHED);
 			} else {
 				detail.setJobStatus(JobStatus.SCHEDULED);

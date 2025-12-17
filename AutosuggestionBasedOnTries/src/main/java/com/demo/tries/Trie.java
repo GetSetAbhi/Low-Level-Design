@@ -1,6 +1,7 @@
 package com.demo.tries;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Trie {
@@ -20,7 +21,53 @@ public class Trie {
 		node.isWord = true;
 	}
 
-	public List<String> getAllWords() {
+	public List<String> loadSuggestion(String word) {
+		TrieNode node = this.getNode(word);
+		if (node != null) {
+			List<String> results = new ArrayList<>();
+			StringBuilder sb = new StringBuilder(word);
+			if (node.isWord) {
+				results.add(sb.toString());
+			}
+			for (char c : node.children.keySet()) {
+				TrieNode temp = node.children.get(c);
+				dfs(temp, sb, results);
+			}
+			return results;
+		}
+		return Collections.EMPTY_LIST;
+	}
+
+	private void dfs(TrieNode node, StringBuilder sb, List<String> results) {
+		if (node == null) {
+			return;
+		}
+		sb.append(node.value);
+		if (node.isWord) {
+			results.add(sb.toString());
+		}
+		for (char c : node.children.keySet()) {
+			TrieNode temp = node.children.get(c);
+			dfs(temp, sb, results);
+		}
+		sb.deleteCharAt(sb.length() - 1);
+	}
+
+	private TrieNode getNode(String word) {
+		char[] carr = word.toCharArray();
+		TrieNode node = this.root;
+		for (char c : carr ) {
+			if (node.children.containsKey(c)) {
+				node = node.children.get(c);
+			} else {
+				node = null;
+				break;
+			}
+		}
+		return node;
+	}
+
+	/*public List<String> getAllWords() {
 		List<String> result = new ArrayList<>();
 		for (char c : this.root.children.keySet()) {
 			TrieNode node = this.root.children.get(c);
@@ -69,5 +116,5 @@ public class Trie {
 			return node;
 		}
 		return null;
-	}
+	}*/
 }
