@@ -12,13 +12,15 @@ public class ElevatorSystem {
 	
 	public ElevatorSelectionStrategy elevatorSelectionStrategy;
 	public ExecutorService executorService = Executors.newFixedThreadPool(3);
+	private ElevatorStateContext elevatorStateContext;
 	List<Elevator> elevators;
 	
 	public ElevatorSystem() {
+		this.elevatorStateContext = new ElevatorStateContext();
 		this.elevatorSelectionStrategy = new NearestElevatorStrategy();
 		this.elevators = new ArrayList<>();
 		for (int i = 0; i < 3; i++) {
-			this.elevators.add(new Elevator(i + 1));
+			this.elevators.add(new Elevator(i + 1, this.elevatorStateContext));
 		}
 	}
 

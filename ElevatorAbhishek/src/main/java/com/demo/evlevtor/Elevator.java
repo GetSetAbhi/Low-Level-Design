@@ -2,10 +2,7 @@ package com.demo.evlevtor;
 
 import java.util.TreeSet;
 
-import com.demo.evlevtor.state.DownState;
 import com.demo.evlevtor.state.ElevatorState;
-import com.demo.evlevtor.state.IdleState;
-import com.demo.evlevtor.state.Upstate;
 
 public class Elevator implements Runnable {
 
@@ -13,19 +10,15 @@ public class Elevator implements Runnable {
 	public int currentFloor;
 	public ElevatorState state;
 	
-	public ElevatorState upstate;
-	public ElevatorState downState;
-	public ElevatorState idlestate;
+	public ElevatorStateContext elevatorStateContext;
 	
 	public TreeSet<Request> upRequest;
 	public TreeSet<Request> downRequest;
 	
-	public Elevator(int id) {
+	public Elevator(int id, ElevatorStateContext context) {
 		this.elevatorId = id;
-		this.idlestate = new IdleState();
-		this.upstate = new Upstate();
-		this.downState = new DownState();
-		this.state = this.idlestate;
+		this.elevatorStateContext = context;
+		this.state = context.getIdlestate();
 		this.currentFloor = 0;
 		
 		this.upRequest = new TreeSet<>((a, b) -> a.targetFloor - b.targetFloor);
@@ -54,15 +47,15 @@ public class Elevator implements Runnable {
 	}
 	
 	public void goDown() {
-		this.state = this.downState;
+		this.state = this.elevatorStateContext.getDownState();
 	}
 	
 	public void goUp() {
-		this.state = this.upstate;
+		this.state = this.elevatorStateContext.getUpstate();
 	}
 	
 	public void stay() {
-		this.state = this.idlestate;
+		this.state = this.elevatorStateContext.getIdlestate();
 	}
 	
 	public Direction getDirection() {
