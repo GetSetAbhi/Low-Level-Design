@@ -1,52 +1,68 @@
 package com.demo.safdssdgsdfgdfg;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class MainBook {
 
 	public static void main(String[] args) {
 		SearchService searchService = new SearchService();
-		
+
 		Movie avengers = new Movie(1, "Avengers");
 		Movie dhurandhar = new Movie(2, "Dhurandhar");
-		
+
 		Show show1 = new Show(1, avengers);
 		Show show2 = new Show(2, dhurandhar);
-		
+
 		Show show3 = new Show(3, avengers);
 		Show show4 = new Show(4, dhurandhar);
-		
+
 		searchService.addShowToCity("Chandigarh", show1);
 		searchService.addShowToCity("Chandigarh", show2);
 		searchService.addShowToCity("Jammu", show3);
 		searchService.addShowToCity("Jammu", show4);
-		
+
 		List<Show> shows = searchService.getAllShowsInCity("Jammu");
-		
+
 		BookingService bookingService = new BookingService();
-		Set<Integer> seatNumbers = new HashSet<>(Arrays.asList(1, 2));
-		bookingService.bookTickets("Abhishek", show4, seatNumbers);
-		bookingService.bookTickets("Palak", show4, seatNumbers);
+		Set<Integer> seatNumbers = new HashSet<>(List.of(1, 2));
+
+		new Thread(() -> {
+			bookingService.bookTickets("Abhishek", show4, seatNumbers);
+		}).start();
+
+		new Thread(() -> {
+			bookingService.bookTickets("Palak", show4, seatNumbers);
+		}).start();
 	}
 
 }
 
 class BookingService {
+	/**
+	 * This follows a transactional type scenario.
+	 * 1 acquire lock
+	 * 2 validate
+	 * 3 book it
+	 * */
 	public Booking bookTickets(String user, Show show, Set<Integer> seatNumbers) {
 		List<Seat> seats = show.seats.stream().filter(i -> seatNumbers.contains(i.seatNumber))
-				.sorted((a, b) -> Integer.compare(a.seatNumber, b.seatNumber)).collect(Collectors.toList());
+				.sorted((a, b) -> Integer.compare(a.seatNumber, b.seatNumber)).toList();
 		try {
+			lockAllSeats(seats);
 			for (Seat seat : seats) {
-				synchronized (seat) {
-					seat.book();
+				if (seat.isBooked()) {
+					throw new RuntimeException(seat.getSeatNumber() + " was already booked");
 				}
+			}
+			for (Seat seat : seats) {
+				seat.book();
 			}
 			System.out.println("All seats booked successfully for " + user);
 			return new Booking(user, show, seats);
@@ -54,6 +70,21 @@ class BookingService {
 			System.err.println(e.getMessage());
 			System.out.print("There was an error while booking seats");
 			throw e;
+		} finally {
+			unlockAllSeats(seats);
+		}
+	}
+
+	private void lockAllSeats(List<Seat> seats) {
+		for (Seat seat : seats) {
+			seat.lock();
+		}
+	}
+
+	private void unlockAllSeats(List<Seat> seats) {
+		int n = seats.size();
+		for (int i = n - 1; i >= 0; i -= 1) {
+			seats.get(i).unlock();
 		}
 	}
 }
@@ -62,7 +93,7 @@ class Booking {
 	String user;
 	Show show;
 	List<Seat> seats;
-	
+
 	public Booking(String user, Show show, List<Seat> seats) {
 		super();
 		this.user = user;
@@ -114,17 +145,16 @@ class Movie {
 class Seat {
 	int seatNumber;
 	boolean isBooked;
+	private Lock lock;
 
 	public Seat(int seatNumber) {
 		super();
 		this.seatNumber = seatNumber;
 		this.isBooked = false;
+		this.lock = new ReentrantLock();
 	}
 
 	public void book() {
-		if (isBooked) {
-			throw new RuntimeException("Seat is already booked");
-		}
 		isBooked = true;
 	}
 
@@ -134,6 +164,14 @@ class Seat {
 
 	public boolean isBooked() {
 		return isBooked;
+	}
+
+	public void lock() {
+		this.lock.lock();
+	}
+
+	public void unlock() {
+		this.lock.unlock();
 	}
 }
 
