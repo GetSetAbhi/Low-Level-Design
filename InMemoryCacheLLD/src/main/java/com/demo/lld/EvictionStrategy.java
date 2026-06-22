@@ -62,7 +62,7 @@ class LFUEvictionStrategy<K> implements EvictionStrategy<K> {
 	@Override
 	public K evictKey() {
 		LinkedHashSet<K> set = freqToKeys.get(minFreq);
-		K key = set.getFirst();
+		K key = set.iterator().next();
 		set.remove(key);
 		if (set.size() == 0) {
 			freqToKeys.remove(minFreq);

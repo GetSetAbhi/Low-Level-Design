@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import com.demo.meeting.Meeting.MeetingBuilder;
 
@@ -77,7 +78,7 @@ public class MeetingService {
 	public void sendReminders() {
 		List<Meeting> meetings = this.meetingMap.entrySet().stream().map(e -> e.getValue())
 				.filter(m -> m.getMeetingStatus().equals(MeetingStatus.SCHEDULED) && isMeetingEligibleForReminder(m))
-				.toList();
+				.collect(Collectors.toList());
 		for (Meeting meeting : meetings) {
 			String message = "The meeting with title {" + meeting.getMeetingTitle() + "} is about to start";
 			meeting.sendReminder(message);
@@ -87,7 +88,7 @@ public class MeetingService {
 	private void setMeetingStatusToFinished() {
 		List<Meeting> meetings = this.meetingMap.entrySet().stream().map(e -> e.getValue()).filter(
 				m -> m.getMeetingStatus().equals(MeetingStatus.SCHEDULED) && isMeetingEndTimeBeforeCurrentTime(m))
-				.toList();
+				.collect(Collectors.toList());
 		for (Meeting meeting : meetings) {
 			String message = "The meeting with title {" + meeting.getMeetingTitle() + "} has ended";
 			meeting.sendReminder(message);

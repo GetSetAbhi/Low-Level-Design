@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class MonitoringService {
 
@@ -27,7 +28,7 @@ public class MonitoringService {
 
 	public void checkMachines() {
 		List<AlertEvent> events = sensorEngine
-				.getAlertsForMachines(this.machineMap.entrySet().stream().map(e -> e.getValue()).toList());
+				.getAlertsForMachines(this.machineMap.entrySet().stream().map(e -> e.getValue()).collect(Collectors.toList()));
 		for (AlertEvent e : events) {
 			notificationService.sendAlert(e);
 		}

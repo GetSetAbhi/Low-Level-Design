@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 import com.demo.coupon.rewarding.Coupon;
 import com.demo.coupon.rewarding.Reward;
@@ -49,7 +50,7 @@ public class Cart {
 
 	public List<Coupon> getAllCoupons() {
 		return this.rewards.stream().filter(item -> item instanceof Coupon).map(item -> (Coupon) item)
-				.toList();
+				.collect(Collectors.toList());
 	}
 	
 	public synchronized double getFinalCheckoutPrice() {

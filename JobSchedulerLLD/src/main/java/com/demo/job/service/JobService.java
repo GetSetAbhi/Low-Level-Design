@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import com.demo.job.Job;
 import com.demo.job.dto.JobDetail;
@@ -31,7 +32,7 @@ public class JobService {
 	private void worker() {
 		long currentTimeInMillis = System.currentTimeMillis();
 		List<JobDetail> upcomingJobs = this.jobMap.entrySet().stream().map(e -> e.getValue())
-				.filter(j -> j.getJobStatus().equals(JobStatus.SCHEDULED)).toList();
+				.filter(j -> j.getJobStatus().equals(JobStatus.SCHEDULED)).collect(Collectors.toList());
 		for (JobDetail jobDetail : upcomingJobs) {
 			if (jobDetail.getJobSchedule().shouldRun(currentTimeInMillis)) {
 				this.executorService.execute(() -> jobRunner(jobDetail, currentTimeInMillis));

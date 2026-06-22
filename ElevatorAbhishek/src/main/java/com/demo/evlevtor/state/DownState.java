@@ -18,7 +18,7 @@ public class DownState implements ElevatorState {
 		System.out.println(elevator.elevatorId + " is now at floor " + elevator.currentFloor);
 		Request request = elevator.downRequest.first();
 		if (request.targetFloor == elevator.currentFloor) {
-			elevator.downRequest.removeFirst();
+			elevator.downRequest.pollFirst();
 			if (request.type == RequestType.EXTERNAL) {
 				System.out.println(elevator.elevatorId + " taking passenger at floor " + elevator.currentFloor);
 			} else {

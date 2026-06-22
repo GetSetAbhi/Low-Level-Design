@@ -18,7 +18,7 @@ public class Upstate implements ElevatorState {
 		System.out.println(elevator.elevatorId + " is now at floor " + elevator.currentFloor);
 		Request request = elevator.upRequest.first();
 		if (request.targetFloor == elevator.currentFloor) {
-			elevator.upRequest.removeFirst();
+			elevator.upRequest.pollFirst();
 			if (request.type == RequestType.EXTERNAL) {
 				System.out.println(elevator.elevatorId + " taking passenger at floor " + elevator.currentFloor);
 			} else {

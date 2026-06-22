@@ -1,6 +1,7 @@
 package com.demo.meeting;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 public class DRIVERMAIN {
@@ -14,13 +15,13 @@ public class DRIVERMAIN {
 		MeetingService meetingService = new MeetingService();
 		meetingService.createMeeting("Ahlua Meeting", LocalDateTime.of(2025, 10, 13, 12, 02),
 				LocalDateTime.of(2025, 10, 13, 12, 05),
-				List.of(user2, user3), user1);
+				Arrays.asList(user2, user3), user1);
 
 		
 		meetingService = new MeetingService();
 		meetingService.createMeeting("Ahlua Meeting", LocalDateTime.of(2025, 10, 13, 12, 03),
 				LocalDateTime.of(2025, 10, 13, 12, 07),
-				List.of(user2, user3), user1);
+				Arrays.asList(user2, user3), user1);
 
 	}
 
